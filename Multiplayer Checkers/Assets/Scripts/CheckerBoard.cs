@@ -1,5 +1,7 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
+using Enums;
 using UnityEngine;
 
 public class CheckerBoard : MonoBehaviour
@@ -10,6 +12,10 @@ public class CheckerBoard : MonoBehaviour
     [SerializeField] private int _boardSize;
     [SerializeField] private Vector3 _boardOffset;
     [SerializeField] private Vector3 _checkerOffset;
+
+    [Header("Turn params")] 
+    [SerializeField] private CheckerColor PlayerColor = CheckerColor.White;
+    [SerializeField] private TurnBelongsTo TurnBelongsTo = TurnBelongsTo.Whites;
     
     [Header("Spawning params")] 
     [SerializeField] private GameObject _whiteCheckerPrefab;
@@ -44,11 +50,16 @@ public class CheckerBoard : MonoBehaviour
         {
             UpdateMouseOver();
             
+            if (_selectedChecker)
+            {
+                UpdateCheckerDrag(_selectedChecker);
+            }
         }
 
         if (Input.GetMouseButtonUp(0))
         {
             UpdateMouseOver();
+            
             TryMove(_startDrag, _mouseOver);
         }
     }
@@ -64,6 +75,16 @@ public class CheckerBoard : MonoBehaviour
         else
         {
             _mouseOver = new Vector2Int(-1, -1);
+        }
+    }
+
+    private void UpdateCheckerDrag(Checker checker)
+    {
+        RaycastHit hit;
+        if (Physics.Raycast(Camera.main.ScreenPointToRay(Input.mousePosition), out hit, 25f,
+            LayerMask.GetMask("Board")))
+        {
+            checker.transform.position = hit.point + Vector3.up;
         }
     }
 
@@ -91,8 +112,79 @@ public class CheckerBoard : MonoBehaviour
         _endDrag = endPosition;
 
         _selectedChecker = Board[startPosition.x, startPosition.y];
+
+        // out if bounds
+        if (endPosition.x < 0 || endPosition.x >= _boardSize ||
+            endPosition.y < 0 || endPosition.y >= _boardSize)
+        {
+            if (_selectedChecker)
+            {
+                MoveChecker(_selectedChecker, startPosition);
+            }
+
+            _startDrag = Vector2Int.zero;
+            _selectedChecker = null;
+            return;
+        }
+
+        if (_selectedChecker)
+        {
+            //if it has not moved
+            if (_endDrag == _startDrag)
+            {
+                MoveChecker(_selectedChecker, startPosition);
+                _startDrag = Vector2Int.zero;
+                _selectedChecker = null;
+                return;
+            }
+            
+            //check if it is a valid move
+            if (_selectedChecker.ValidMove(Board, _startDrag, _endDrag))
+            {
+                // did we kill anything 
+                // if this is a jump
+                if (Math.Abs(endPosition.x - endPosition.x) == 2)
+                {
+                    Checker middleChecker = Board[(startPosition.x + endPosition.x) / 2,
+                        (startPosition.y + endPosition.y) / 2];
+                    if (middleChecker)
+                    {
+                        Board[(startPosition.x + endPosition.x) / 2,
+                            (startPosition.y + endPosition.y) / 2] = null;
+                        middleChecker.gameObject.SetActive(false);
+                    }
+                }
+                
+                Board[endPosition.x, endPosition.y] = _selectedChecker;
+                Board[startPosition.x, startPosition.y] = null;
+                
+                MoveChecker(_selectedChecker, endPosition);
+
+                EndTurn();
+            }
+        }
+    }
+
+    private void EndTurn()
+    {
+        _selectedChecker = null;
+        _startDrag = Vector2Int.zero;
+
+        if (TurnBelongsTo == TurnBelongsTo.Whites)
+        {
+            TurnBelongsTo = TurnBelongsTo.Blacks;
+        }
+        else
+        {
+            TurnBelongsTo = TurnBelongsTo.Whites;
+        }
+
+        CheckVictory();
+    }
+
+    private void CheckVictory()
+    {
         
-        MoveChecker(_selectedChecker, endPosition);
     }
 
     private void GenerateBoard()

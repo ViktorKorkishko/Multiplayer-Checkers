@@ -296,6 +296,25 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 90, y: 0, z: 0}
+--- !u!1 &1311598802 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 2656678566392262373, guid: 3201f5fa296ebaf4a8f6d16dae5f3de3,
+    type: 3}
+  m_PrefabInstance: {fileID: 2891032532977300880}
+  m_PrefabAsset: {fileID: 0}
+--- !u!65 &1311598806
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1311598802}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Size: {x: 0.08, y: 0.08, z: 0.001}
+  m_Center: {x: 0, y: 0, z: 0}
 --- !u!1001 &2891032532977300880
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -395,3 +414,7 @@ MonoBehaviour:
     type: 3}
   _blackCheckerPrefab: {fileID: 5004312644116429371, guid: c88ddd370068a124aa0f3f1e61b101a2,
     type: 3}
+  _selectedChecker: {fileID: 0}
+  _mouseOver: {x: 0, y: 0}
+  _startDrag: {x: 0, y: 0}
+  _endDrag: {x: 0, y: 0}
