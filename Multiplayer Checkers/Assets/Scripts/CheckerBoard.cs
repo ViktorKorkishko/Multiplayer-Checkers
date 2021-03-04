@@ -6,17 +6,19 @@ using UnityEngine;
 
 public class CheckerBoard : MonoBehaviour
 {
-    [Header("Board params")] 
+    [Header("Board params")]
     public Checker[,] Board;
-
+    
     [SerializeField] private int _boardSize;
     [SerializeField] private Vector3 _boardOffset;
     [SerializeField] private Vector3 _checkerOffset;
 
-    [Header("Turn params")] 
-    [SerializeField] private CheckerColor PlayerColor = CheckerColor.White;
+    [Header("Turn params")]
+    public CheckerColor PlayerColor = CheckerColor.White;
     [SerializeField] private TurnBelongsTo TurnBelongsTo = TurnBelongsTo.Whites;
-    
+    [SerializeField] private bool hasKilliedThisTurn;
+    [SerializeField] private List<Checker> _forcedCheckers = new List<Checker>();
+
     [Header("Spawning params")] 
     [SerializeField] private GameObject _whiteCheckerPrefab;
     [SerializeField] private GameObject _blackCheckerPrefab;
@@ -100,13 +102,32 @@ public class CheckerBoard : MonoBehaviour
         Checker checker = Board[position.x, position.y];
         if (checker)
         {
-            _selectedChecker = checker;
-            _startDrag = _mouseOver;
+            if (checker.CheckerColor == PlayerColor)
+            {
+                if (_forcedCheckers.Count == 0)
+                {
+                    _selectedChecker = checker;
+                    _startDrag = _mouseOver;
+                }
+                else
+                {
+                    // look for the checker under 
+                    if (_forcedCheckers.Find(fp => fp == checker) == null)
+                    {
+                        return;
+                    }
+
+                    _selectedChecker = checker;
+                    _startDrag = _mouseOver;
+                }
+            }
         }
     }
 
     private void TryMove(Vector2Int startPosition, Vector2Int endPosition)
     {
+        ScanForPossibleMove();
+        
         // multiplayer support
         _startDrag = startPosition;
         _endDrag = endPosition;
@@ -143,7 +164,7 @@ public class CheckerBoard : MonoBehaviour
             {
                 // did we kill anything 
                 // if this is a jump
-                if (Math.Abs(endPosition.x - endPosition.x) == 2)
+                if (Math.Abs(endPosition.x - startPosition.x) == 2)
                 {
                     Checker middleChecker = Board[(startPosition.x + endPosition.x) / 2,
                         (startPosition.y + endPosition.y) / 2];
@@ -152,15 +173,32 @@ public class CheckerBoard : MonoBehaviour
                         Board[(startPosition.x + endPosition.x) / 2,
                             (startPosition.y + endPosition.y) / 2] = null;
                         middleChecker.gameObject.SetActive(false);
+                        hasKilliedThisTurn = true;
                     }
                 }
                 
+                // were we suppoused to kill
+                if (_forcedCheckers.Count != 0 && !hasKilliedThisTurn)
+                {
+                    MoveChecker(_selectedChecker, _startDrag);
+                    _startDrag = Vector2Int.zero;
+                    _selectedChecker = null;
+                    return;
+                }
+
                 Board[endPosition.x, endPosition.y] = _selectedChecker;
                 Board[startPosition.x, startPosition.y] = null;
                 
                 MoveChecker(_selectedChecker, endPosition);
 
                 EndTurn();
+            }
+            else
+            {
+                MoveChecker(_selectedChecker, _startDrag);
+                _startDrag = Vector2Int.zero;
+                _selectedChecker = null;
+                return;
             }
         }
     }
@@ -179,12 +217,29 @@ public class CheckerBoard : MonoBehaviour
             TurnBelongsTo = TurnBelongsTo.Whites;
         }
 
+        hasKilliedThisTurn = false;
         CheckVictory();
     }
 
-    private void CheckVictory()
+    private void CheckVictory() { }
+
+    private void ScanForPossibleMove()
     {
-        
+        _forcedCheckers.Clear();
+
+        for (int y = 0; y < _boardSize; y++)
+        {
+            for (int x = 0; x < _boardSize; x++)
+            {
+                if (Board[x, y] && Board[x, y].CheckerColor == CheckerColor.White && TurnBelongsTo == TurnBelongsTo.Whites)
+                {
+                    if (Board[x, y].IsForcedToMove(Board, new Vector2Int(x, y)))
+                    {
+                        _forcedCheckers.Add(Board[x, y]);
+                    }
+                }
+            }
+        }
     }
 
     private void GenerateBoard()
