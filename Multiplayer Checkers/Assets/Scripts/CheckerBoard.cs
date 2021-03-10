@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using Enums;
+using TMPro.EditorUtilities;
 using UnityEngine;
 
 public class CheckerBoard : MonoBehaviour
@@ -41,6 +42,15 @@ public class CheckerBoard : MonoBehaviour
 
     private void Update()
     {
+        if (PlayerColor == CheckerColor.White)
+        {
+            TurnBelongsTo = TurnBelongsTo.Whites;
+        }
+        else
+        {
+            TurnBelongsTo = TurnBelongsTo.Blacks;
+        }
+
         if (Input.GetMouseButtonDown(0))
         {
             UpdateMouseOver();
@@ -205,9 +215,31 @@ public class CheckerBoard : MonoBehaviour
 
     private void EndTurn()
     {
+        Vector2Int endPosition = _endDrag;
+
+        if (_selectedChecker)
+        {
+            if (_selectedChecker.CheckerColor == CheckerColor.White && _selectedChecker.CheckerType == CheckerType.Default && endPosition.y == 7)
+            {
+                _selectedChecker.CheckerType = CheckerType.King;
+                _selectedChecker.transform.Rotate(Vector3.right * 180f);
+            }
+            else if (_selectedChecker.CheckerColor == CheckerColor.Black && _selectedChecker.CheckerType == CheckerType.Default && endPosition.y == 0)
+            {
+                _selectedChecker.CheckerType = CheckerType.King;
+                _selectedChecker.transform.Rotate(Vector3.right * 180f);
+            }
+        }
+        
         _selectedChecker = null;
         _startDrag = Vector2Int.zero;
 
+        ScanForPossibleMove(_selectedChecker, endPosition);
+        if (_forcedCheckers.Count != 0 && hasKilliedThisTurn)
+        {
+            return;
+        }
+        
         if (TurnBelongsTo == TurnBelongsTo.Whites)
         {
             TurnBelongsTo = TurnBelongsTo.Blacks;
@@ -216,12 +248,69 @@ public class CheckerBoard : MonoBehaviour
         {
             TurnBelongsTo = TurnBelongsTo.Whites;
         }
-
+        
+        if (PlayerColor == CheckerColor.Black)
+        {
+            PlayerColor = CheckerColor.White;
+        }
+        else
+        {
+            PlayerColor = CheckerColor.Black;
+        }
+        
         hasKilliedThisTurn = false;
         CheckVictory();
     }
 
-    private void CheckVictory() { }
+    private void CheckVictory()
+    {
+        var checkers = FindObjectsOfType<Checker>();
+        bool hasWhite = false, hasBlack = true;
+
+        for (int i = 0; i < checkers.Length; i++)
+        {
+            if (checkers[i].CheckerColor == CheckerColor.White)
+            {
+                hasWhite = true;
+            }
+            else
+            {
+                hasBlack = true;
+            }
+        }
+
+        if (!hasWhite)
+        {
+            Victory(false);
+        }
+
+        if (!hasBlack)
+        {
+            Victory(true);
+        }
+    }
+
+    private void Victory(bool isWhite)
+    {
+        if (isWhite)
+        {
+            Debug.Log("White team has won");
+        }
+        else
+        {
+            Debug.Log("Black team has won");
+        }
+    }
+
+    private void ScanForPossibleMove(Checker checker, Vector2Int position)
+    {
+        _forcedCheckers.Clear();
+
+        if (Board[position.x, position.y].IsForcedToMove(Board, position))
+        {
+            _forcedCheckers.Add(_selectedChecker);
+        }
+    }
 
     private void ScanForPossibleMove()
     {
