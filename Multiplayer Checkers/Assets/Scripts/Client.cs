@@ -6,11 +6,18 @@ using UnityEngine;
 
 public class Client : MonoBehaviour
 {
+    public string name;
+    
     private bool socketReady;
     private TcpClient socket;
     private NetworkStream stream;
     private StreamWriter writer;
     private StreamReader reader;
+
+    private void Start()
+    {
+        DontDestroyOnLoad(gameObject);
+    }
 
     public bool ConnectToServer(string host, int port)
     {
@@ -61,12 +68,12 @@ public class Client : MonoBehaviour
         writer.WriteLine(data);
         writer.Flush();
     }
-    
     // read from server
     private void OnIncomingData(string data)
     {
         Debug.Log(data);
     }
+    
     private void OnApplicationQuit()
     {
         CloseSocket();

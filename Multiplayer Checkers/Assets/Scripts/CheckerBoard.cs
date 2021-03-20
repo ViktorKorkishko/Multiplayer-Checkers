@@ -2,7 +2,6 @@
 using System.Collections;
 using System.Collections.Generic;
 using Enums;
-using TMPro.EditorUtilities;
 using UnityEngine;
 
 public class CheckerBoard : MonoBehaviour
