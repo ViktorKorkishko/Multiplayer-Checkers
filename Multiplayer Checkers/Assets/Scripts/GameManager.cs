@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
 public class GameManager : MonoBehaviour
@@ -21,7 +22,12 @@ public class GameManager : MonoBehaviour
         Instance = this;
         DontDestroyOnLoad(this);
     }
-    
+
+    public void StartGame()
+    {
+        SceneManager.LoadScene("Game");
+    }
+
     public void ConnectToServerButton()
     {
         string hostAdress = hostInput.text;
@@ -33,10 +39,10 @@ public class GameManager : MonoBehaviour
         try
         {
             client = Instantiate(clientPrefab).GetComponent<Client>();
-            client.name = nameInput.text;
-            if (client.name == "")
+            client.Name = nameInput.text;
+            if (client.Name == "")
             {
-                client.name = "Player";
+                client.Name = "Player";
             }
             client.ConnectToServer(hostAdress, 6321);
             Debug.Log("Connect menu set active false");
@@ -55,10 +61,10 @@ public class GameManager : MonoBehaviour
             server.Init();
             
             client = Instantiate(clientPrefab).GetComponent<Client>();
-            client.name = nameInput.text;
-            if (client.name == "")
+            client.Name = nameInput.text;
+            if (client.Name == "")
             {
-                client.name = "Host";
+                client.Name = "Host";
             }
             client.ConnectToServer("127.0.0.1", 6321);
         }

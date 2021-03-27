@@ -82,12 +82,19 @@ public class Server : MonoBehaviour
     private void AcceptTcpClient(IAsyncResult ar)
     {
         TcpListener listener = (TcpListener) ar.AsyncState;
-        ServerClient sc = new ServerClient(listener.EndAcceptTcpClient(ar));
-        clients.Add(sc);
+        
+        string allUsers = "";
+        foreach (ServerClient client in clients)
+        {
+            allUsers += client.Name + '|';
+        }
+        
+        ServerClient serverClient = new ServerClient(listener.EndAcceptTcpClient(ar));
+        clients.Add(serverClient);
         
         StartListening();
-        
-        Debug.Log("Somebody has connected");
+
+        Broadcast("SWHO|" + allUsers, serverClient);
     }
     private bool IsConnected(TcpClient client)
     {
@@ -111,15 +118,15 @@ public class Server : MonoBehaviour
             return false;
         }
     }
-    
+
     // server send
-    private void Broadcast(string data, List<ServerClient> cl)
+    private void Broadcast(string data, List<ServerClient> serverClients)
     {
-        foreach (var sc in cl)
+        foreach (var serverClient in serverClients)
         {
             try
             {
-                StreamWriter streamWriter = new StreamWriter(sc.client.GetStream());
+                StreamWriter streamWriter = new StreamWriter(serverClient.client.GetStream());
                 streamWriter.WriteLine(data);
                 streamWriter.Flush();
             }
@@ -129,17 +136,34 @@ public class Server : MonoBehaviour
             }
         }
     }
+    private void Broadcast(string data, ServerClient serverClient)
+    {
+        List<ServerClient> serverClients = new List<ServerClient>
+        {
+            serverClient
+        };
+        Broadcast(data, serverClients);
+    }
 
     // server read
     private void OnIncomingData(ServerClient client, string data)
     {
-        Debug.Log(client.name + " : " + data);
+        Debug.Log("Server: " + data);
+        string[] aData = data.Split('|');
+
+        switch (aData[0])
+        {
+            case "CWHO":
+                client.Name = aData[1];
+                Broadcast("SCNN|" + client.Name, clients);
+                break;
+        }
     }
 }
 
 public class ServerClient
 {
-    public string name;
+    public string Name;
     public TcpClient client;
 
     public ServerClient(TcpClient client)
