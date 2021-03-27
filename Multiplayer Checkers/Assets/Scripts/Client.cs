@@ -8,6 +8,7 @@ using UnityEngine;
 public class Client : MonoBehaviour
 {
     public string Name;
+    public bool IsHost = false;
     
     private bool socketReady;
     private TcpClient socket;
@@ -84,10 +85,15 @@ public class Client : MonoBehaviour
                 {
                     UserConnected(aData[i], false);
                 }
-                Send("CWHO|" + Name);
+                Send("CWHO|" + Name + "|" + ((IsHost) ? 1 : 0));
                 break;
             case "SCNN":
                 UserConnected(aData[1], false);
+                break;
+            case "SMOV":
+                CheckerBoard.Instance.TryMove(
+                    new Vector2Int(int.Parse(aData[1]), int.Parse(aData[2])), 
+                    new Vector2Int(int.Parse(aData[3]), int.Parse(aData[4])));
                 break;
         }
     }

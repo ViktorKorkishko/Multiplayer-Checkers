@@ -155,7 +155,14 @@ public class Server : MonoBehaviour
         {
             case "CWHO":
                 client.Name = aData[1];
+                client.IsHost = (aData[2] == "0" ? false : true);
                 Broadcast("SCNN|" + client.Name, clients);
+                break;
+            case "CMOV":
+                Broadcast("SMOV|" + aData[1] + "|" + 
+                                            aData[2] + "|" + 
+                                                aData[3] + "|" + 
+                                                    aData[4], clients);
                 break;
         }
     }
@@ -164,6 +171,7 @@ public class Server : MonoBehaviour
 public class ServerClient
 {
     public string Name;
+    public bool IsHost;
     public TcpClient client;
 
     public ServerClient(TcpClient client)

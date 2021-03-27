@@ -6,6 +6,8 @@ using UnityEngine;
 
 public class CheckerBoard : MonoBehaviour
 {
+    public static CheckerBoard Instance { get; set; }
+
     [Header("Board params")]
     public Checker[,] Board;
     
@@ -29,13 +31,26 @@ public class CheckerBoard : MonoBehaviour
     [SerializeField] private Vector2Int _startDrag;
     [SerializeField] private Vector2Int _endDrag;
 
+    private Client client;
+    
     private void Awake()
     {
+        Instance = this;
         Board = new Checker[_boardSize, _boardSize];
     }
 
     private void Start()
     {
+        client = FindObjectOfType<Client>();
+        if (client.IsHost)
+        {
+            PlayerColor = CheckerColor.White;
+        }
+        else
+        {
+            PlayerColor = CheckerColor.Black;
+        }
+
         GenerateBoard();
     }
 
@@ -133,7 +148,7 @@ public class CheckerBoard : MonoBehaviour
         }
     }
 
-    private void TryMove(Vector2Int startPosition, Vector2Int endPosition)
+    public void TryMove(Vector2Int startPosition, Vector2Int endPosition)
     {
         ScanForPossibleMove();
         
@@ -229,10 +244,18 @@ public class CheckerBoard : MonoBehaviour
                 _selectedChecker.transform.Rotate(Vector3.right * 180f);
             }
         }
+
+        string moveMessage = "CMOV|";
+        moveMessage += _startDrag.x.ToString() + '|';
+        moveMessage += _startDrag.y.ToString() + '|';
+        moveMessage += _endDrag.x.ToString() + '|';
+        moveMessage += _endDrag.y.ToString();
         
+        client.Send(moveMessage);
+
         _selectedChecker = null;
         _startDrag = Vector2Int.zero;
-
+        
         ScanForPossibleMove(_selectedChecker, endPosition);
         if (_forcedCheckers.Count != 0 && hasKilliedThisTurn)
         {
@@ -248,6 +271,7 @@ public class CheckerBoard : MonoBehaviour
             TurnBelongsTo = TurnBelongsTo.Whites;
         }
         
+        /*
         if (PlayerColor == CheckerColor.Black)
         {
             PlayerColor = CheckerColor.White;
@@ -256,6 +280,7 @@ public class CheckerBoard : MonoBehaviour
         {
             PlayerColor = CheckerColor.Black;
         }
+        */
         
         hasKilliedThisTurn = false;
         CheckVictory();
