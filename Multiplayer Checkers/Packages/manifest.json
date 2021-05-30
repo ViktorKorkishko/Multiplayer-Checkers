@@ -1,5 +1,8 @@
 {
   "dependencies": {
+    "com.google.external-dependency-manager": "file:C:/Users/korki/Desktop/com.google.external-dependency-manager-1.2.165.tgz",
+    "com.google.firebase.app": "file:C:/Users/korki/Desktop/com.google.firebase.app-7.2.0.tgz",
+    "com.google.firebase.auth": "file:C:/Users/korki/Desktop/com.google.firebase.auth-7.2.0.tgz",
     "com.unity.2d.sprite": "1.0.0",
     "com.unity.collab-proxy": "1.3.9",
     "com.unity.ide.rider": "2.0.7",
@@ -40,5 +43,14 @@
     "com.unity.modules.vr": "1.0.0",
     "com.unity.modules.wind": "1.0.0",
     "com.unity.modules.xr": "1.0.0"
-  }
+  },
+  "scopedRegistries": [
+    {
+      "name": "Firebase",
+      "url": "https://unityregistry-pa.googleapis.com",
+      "scopes": [
+        "com.google"
+      ]
+    }
+  ]
 }

@@ -1,5 +1,27 @@
 {
   "dependencies": {
+    "com.google.external-dependency-manager": {
+      "version": "file:C:/Users/korki/Desktop/com.google.external-dependency-manager-1.2.165.tgz",
+      "depth": 0,
+      "source": "local-tarball",
+      "dependencies": {}
+    },
+    "com.google.firebase.app": {
+      "version": "file:C:/Users/korki/Desktop/com.google.firebase.app-7.2.0.tgz",
+      "depth": 0,
+      "source": "local-tarball",
+      "dependencies": {
+        "com.google.external-dependency-manager": "1.2.165"
+      }
+    },
+    "com.google.firebase.auth": {
+      "version": "file:C:/Users/korki/Desktop/com.google.firebase.auth-7.2.0.tgz",
+      "depth": 0,
+      "source": "local-tarball",
+      "dependencies": {
+        "com.google.firebase.app": "7.2.0"
+      }
+    },
     "com.unity.2d.sprite": {
       "version": "1.0.0",
       "depth": 0,

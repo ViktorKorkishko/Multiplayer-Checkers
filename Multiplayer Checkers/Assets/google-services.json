@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "628782317996",
+    "project_id": "multiplayercheckers-4fd52",
+    "storage_bucket": "multiplayercheckers-4fd52.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:628782317996:android:205a35526050866826fa09",
+        "android_client_info": {
+          "package_name": "com.DefaultCompany.MultiplayerCheckers"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "628782317996-lq5m7nl65em4eahq6idpscl5lkhuhs18.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCbV3z4XV9JttfzXJfmoLMErQPhNRxEI4Q"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "628782317996-lq5m7nl65em4eahq6idpscl5lkhuhs18.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

@@ -3,6 +3,8 @@
   <component name="ContentModelUserStore">
     <attachedFolders />
     <explicitIncludes>
+      <Path>Library/PackageCache/com.google.firebase.app@cdfe53dc0034-1622381670207</Path>
+      <Path>Library/PackageCache/com.google.firebase.auth@a02d652730f2-1622381672547</Path>
       <Path>Library/PackageCache/com.unity.collab-proxy@1.3.9</Path>
       <Path>Library/PackageCache/com.unity.ext.nunit@1.0.5</Path>
       <Path>Library/PackageCache/com.unity.ide.rider@2.0.7</Path>
@@ -17,9 +19,9 @@
     <explicitExcludes>
       <Path>.idea</Path>
       <Path>Builds</Path>
+      <Path>GooglePackages</Path>
       <Path>Library</Path>
       <Path>Logs</Path>
-      <Path>Temp</Path>
       <Path>UserSettings</Path>
       <Path>obj</Path>
     </explicitExcludes>
